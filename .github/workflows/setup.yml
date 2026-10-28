@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
   push:                       # also when what it applies changes (safe to re-run: queue items that exist are kept)
     branches: [main]
-    paths: [family.py, setup_family.py, "data/**"]
+    paths: [family.py, setup_family.py, "data/**", .github/workflows/setup.yml]
 
 permissions:
   id-token: write
