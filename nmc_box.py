@@ -29,7 +29,7 @@ SITE = "https://nmc.org.in"
 UA = "Mozilla/5.0 (compatible; s1d-labs research; +https://github.com/s1d-labs)"
 PER_PAGE = 100
 CONC_START, CONC_MAX, STEP, PROBE = 1, 32, 50, 500   # in flight: start, hard ceiling, clean pages per step up / per probe
-REFUSED_WAIT = 60                                   # after a refusal, nothing goes out for this many seconds
+REFUSED_WAIT = 30                                   # after a refusal, nothing goes out for this many seconds
 MIN_GAP = 1.0                                       # seconds between the starts of two requests, whatever the concurrency
 HERE = Path(__file__).parent
 
