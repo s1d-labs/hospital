@@ -7,6 +7,7 @@ Runs on members' GitHub Actions minutes through scrape-hub (https://scrape.s1d.m
 
 | Project | Source | Task | Records |
 |---|---|---|---|
+| `hospital-dirs` | CGHS empanelled hospitals, e-Raktkosh blood centres (per state), ABDM master lists | `fetch` (`fetch.py`) | one per request: the whole response |
 | `hospital-nmc` | NMC Indian Medical Register, `nmc.org.in/indian-medical-register/search` (public JSON) | `nmc` (`nmc.py`) | one per registration (~1.75M), id = the register's own id |
 
 ### hospital-nmc

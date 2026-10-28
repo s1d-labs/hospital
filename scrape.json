@@ -3,6 +3,7 @@
   "about": "Sources for HospitalDoor: hospitals, and the doctors and other professionals who work in them. First: NMC's Indian Medical Register.",
   "setup": ["pip install -r requirements.txt"],
   "tasks": {
-    "nmc": ["python", "nmc.py"]
+    "nmc": ["python", "nmc.py"],
+    "fetch": ["python", "fetch.py"]
   }
 }

@@ -25,6 +25,22 @@ def nmc_items():
     return items
 
 
+CGHS = "https://cghs.mohfw.gov.in/AHIMSG5/hislogin/getEmpanelledHospitalsLgnFtr?stateCode=&cityCode=&status=&tier=&category="
+ERAKTKOSH = "https://eraktkosh.mohfw.gov.in/eraktkoshPortal/eraktkosh"
+ABDM = "https://apinhpr.abdm.gov.in/v4"
+
+
+def dirs_items():
+    """Whole small directories, one request each: CGHS hospitals (all India in one answer), e-Raktkosh blood centres per state
+    (state codes 1-38, the census codes e-Raktkosh uses: Bihar = 10), and ABDM master lists."""
+    items = [{"key": "cghs-hospitals", "payload": {"url": CGHS, "expected": 1}},
+             {"key": "eraktkosh-master", "payload": {"url": f"{ERAKTKOSH}/master/all", "method": "POST", "json": {"hospitalCode": 100}, "expected": 1}},
+             {"key": "abdm-states", "payload": {"url": f"{ABDM}/hpr/master/states", "expected": 1}},
+             {"key": "abdm-facility-types", "payload": {"url": f"{ABDM}/hfr/master/facilityTypeDetails/getAllActiveFacilityTypes", "expected": 1}}]
+    items += [{"key": f"eraktkosh-state-{n:02d}", "payload": {"url": f"{ERAKTKOSH}/bloodbanks?stateCode={n}", "expected": 1}} for n in range(1, 39)]
+    return items
+
+
 PROJECTS = [
     {
         "name": f"{FAMILY}-nmc",
@@ -36,6 +52,17 @@ PROJECTS = [
         "max_workers": 16,
         "unit_label": "block of 10 pages", "record_label": "doctor",
         "items": nmc_items(),
+    },
+    {
+        "name": f"{FAMILY}-dirs",
+        "title": "Small health directories: CGHS hospitals, e-Raktkosh blood centres, ABDM master lists",
+        "task": "fetch",
+        "target": "mohfw.gov.in",
+        "env": {},
+        "probe": None,                          # the hub's own box is outside India and can't reach these, so no health check
+        "max_workers": 2,
+        "unit_label": "request", "record_label": "response",
+        "items": dirs_items(),
     },
 ]
 
