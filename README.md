@@ -19,6 +19,13 @@ Runs on members' GitHub Actions minutes through scrape-hub (https://scrape.s1d.m
 - Kept: name, registration no./date, UPRN, council, year of info, qualification (+ year, university), additional
   qualifications, removed status, and the year queried. **Dropped before storing**: home address, date of birth, father's name.
 
+### NMC from one machine (`nmc_box.py`)
+
+NMC refuses GitHub/Azure runner IPs far more than other clients (2026-10-28: 55-90% 429s at 0.2 req/s per runner IP, while a
+single VPS client got none), so the pool project is paused and the register is fetched from dev-vps-2 by `nmc_box.py`: one
+client, one request at a time with an adaptive gap, every page saved as returned (all fields), resumable. Output stays private
+on that box (`~/data/nmc/`); `--build` writes one row per register id and a per-year completeness summary.
+
 ## Check
 
 `python -m pytest tests` (parsing, on a made-up saved page), `python nmc.py --local 1990 3` (one live page, no hub),
