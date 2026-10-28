@@ -4,9 +4,11 @@ than other clients (429 "this part of the register is busy"), so the full regist
 Every search page is saved exactly as NMC returned it (all fields), gzipped: OUT/raw/y<year>/p<page>.json.gz. Pages already
 saved are skipped, so the job can be stopped and restarted at any time. Progress: OUT/progress.json; log on stdout.
 
-Pages go out in shuffled order, so concurrent requests hit different years (NMC answers 429 "this part of the register
-is busy" when several queries hit the same year at once). Pace: CONC_START requests in flight, one more after every STEP clean pages, halved on any refusal (a 20 s wait before that
-page is tried again), never above CONC_MAX. Years and their totals: data/nmc_year_counts.json.
+Pages go out in shuffled order. NMC limits each client IP: past roughly 2.5-3 pages/s it answers 429 "this part of the
+register is busy", and after a burst it keeps refusing for a while even at one request at a time (2026-10-28). Pace:
+CONC_START requests in flight, one more after every STEP clean pages, halved on any refusal (REFUSED_WAIT seconds before that
+page is tried again), never above CONC_MAX; the first refusal of a burst sets the ceiling. After a long run of refusals,
+stop it and let it cool off rather than retrying. Years and their totals: data/nmc_year_counts.json.
 
     python nmc_box.py OUT_DIR            # fetch everything missing
     python nmc_box.py OUT_DIR --build    # also write OUT/doctors.jsonl.gz (one row per register id, all fields) + a summary
@@ -25,7 +27,8 @@ import requests
 SITE = "https://nmc.org.in"
 UA = "Mozilla/5.0 (compatible; s1d-labs research; +https://github.com/s1d-labs)"
 PER_PAGE = 100
-CONC_START, CONC_MAX, STEP, PROBE = 4, 32, 50, 500   # in flight: start, hard ceiling, clean pages per step up / per probe
+CONC_START, CONC_MAX, STEP, PROBE = 1, 32, 50, 500   # in flight: start, hard ceiling, clean pages per step up / per probe
+REFUSED_WAIT = 60                                   # seconds before a refused page is tried again
 HERE = Path(__file__).parent
 
 
@@ -124,7 +127,7 @@ def fetch_all(out):
             slots.refused()                          # 429 "busy", a 200 without success, or a dropped connection
             with lock:
                 stats["errors" if err else "refused"] += 1
-            time.sleep(20)
+            time.sleep(REFUSED_WAIT)
 
     def worker():
         while True:
