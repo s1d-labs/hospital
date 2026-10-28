@@ -28,16 +28,19 @@ def nmc_items():
 CGHS = "https://cghs.mohfw.gov.in/AHIMSG5/hislogin/getEmpanelledHospitalsLgnFtr?stateCode=&cityCode=&status=&tier=&category="
 ERAKTKOSH = "https://eraktkosh.mohfw.gov.in/eraktkoshPortal/eraktkosh"
 ABDM = "https://apinhpr.abdm.gov.in/v4"
+# e-Raktkosh state codes (POST master/all, statesWithDistricts, 2026-10-28): census codes 10-37 (no 26), and 91-99 for the
+# first nine (J&K, Himachal, Punjab, Chandigarh, Uttarakhand, Haryana, Delhi, Rajasthan, Uttar Pradesh)
+ERAKTKOSH_STATES = [*range(10, 26), *range(27, 38), *range(91, 100)]
 
 
 def dirs_items():
     """Whole small directories, one request each: CGHS hospitals (all India in one answer), e-Raktkosh blood centres per state
-    (state codes 1-38, the census codes e-Raktkosh uses: Bihar = 10), and ABDM master lists."""
+    (e-Raktkosh's own state codes, from its master list)."""
     items = [{"key": "cghs-hospitals", "payload": {"url": CGHS, "expected": 1}},
              {"key": "eraktkosh-master", "payload": {"url": f"{ERAKTKOSH}/master/all", "method": "POST", "json": {"hospitalCode": 100}, "expected": 1}},
-             {"key": "abdm-states", "payload": {"url": f"{ABDM}/hpr/master/states", "expected": 1}},
-             {"key": "abdm-facility-types", "payload": {"url": f"{ABDM}/hfr/master/facilityTypeDetails/getAllActiveFacilityTypes", "expected": 1}}]
-    items += [{"key": f"eraktkosh-state-{n:02d}", "payload": {"url": f"{ERAKTKOSH}/bloodbanks?stateCode={n}", "expected": 1}} for n in range(1, 39)]
+             ]
+    # ABDM (apinhpr.abdm.gov.in) answers 403 to the runners too (2026-10-28): India-only, fetch it from an Indian connection
+    items += [{"key": f"eraktkosh-state-{n:02d}", "payload": {"url": f"{ERAKTKOSH}/bloodbanks?stateCode={n}", "expected": 1}} for n in ERAKTKOSH_STATES]
     return items
 
 
