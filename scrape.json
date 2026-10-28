@@ -1,8 +1,8 @@
 {
-  "family": "example",
-  "about": "Example family: books.toscrape.com (a public site made for scraping practice). Copy this repo and change it.",
+  "family": "hospital",
+  "about": "Sources for HospitalDoor: hospitals, and the doctors and other professionals who work in them. First: NMC's Indian Medical Register.",
   "setup": ["pip install -r requirements.txt"],
   "tasks": {
-    "crawl": ["python", "crawl.py"]
+    "nmc": ["python", "nmc.py"]
   }
 }

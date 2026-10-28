@@ -1,0 +1,5 @@
+{"success":true,"data":[
+ {"id":101,"name":"Asha  Kumari ","father_name":"Ram Prasad","dob":"1970-01-01 00:00:00","registration_no":"1234","registration_date":"01-02-1995","uprn_no":null,"state_medical_council":"Bihar Medical Council","state_code":"BIH","year_of_info":1995,"permanent_address":"House 1, Some Road, Patna","qualification":"MBBS","qualification_year":"1994","university":"Patna University","additional_qualifications":[{"qualification":"MD (Obst & Gynae)","year":"1999","university":"Patna University"}],"removed_status":0},
+ {"id":102,"name":"","father_name":"","dob":"","registration_no":"5678","registration_date":"03-04-1995","uprn_no":"","state_medical_council":"Bihar Medical Council","state_code":"BIH","year_of_info":1995,"permanent_address":"","qualification":"LMP","qualification_year":"","university":"","additional_qualifications":[],"removed_status":1},
+ {"name":"no id: skipped"}
+],"pagination":{"total":2,"count":3,"per_page":100,"current_page":1,"total_pages":1}}
