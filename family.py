@@ -41,6 +41,16 @@ def dirs_items():
              ]
     # ABDM (apinhpr.abdm.gov.in) answers 403 to the runners too (2026-10-28): India-only, fetch it from an Indian connection
     items += [{"key": f"eraktkosh-state-{n:02d}", "payload": {"url": f"{ERAKTKOSH}/bloodbanks?stateCode={n}", "expected": 1}} for n in ERAKTKOSH_STATES]
+    # the same listing per district (master/all statesWithDistricts, 781 districts): it places every centre in its district
+    items += [{"key": f"eraktkosh-district-{s}-{d}", "payload": {"url": f"{ERAKTKOSH}/bloodbanks?stateCode={s}&districtCode={d}", "expected": 1}}
+              for s, d, _, _ in json.loads((HERE / "data" / "eraktkosh_districts.json").read_text())]
+    # discovery: the public pages, to find the stock-availability and centre-detail endpoints they call
+    items += [{"key": f"eraktkosh-page-{k}", "payload": {"url": u, "expected": 1}} for k, u in [
+        ("home", "https://eraktkosh.mohfw.gov.in/"),
+        ("portal", "https://eraktkosh.mohfw.gov.in/eraktkoshPortal/"),
+        ("stock", "https://eraktkosh.mohfw.gov.in/BLDAHIMS/bloodbank/stockAvailability.cnt"),
+        ("nearby", "https://eraktkosh.mohfw.gov.in/BLDAHIMS/bloodbank/nearbyBB.cnt"),
+    ]]
     return items
 
 
