@@ -75,7 +75,7 @@ PROJECTS = [
     },
     {
         "name": f"{FAMILY}-bloodstock",
-        "title": "e-Raktkosh live blood stock, all India, every 3 hours (snapshots kept)",
+        "title": "e-Raktkosh live blood stock: every state x component, every 3 hours (snapshots kept)",
         "task": "fetch",
         "target": "eraktkosh.mohfw.gov.in",
         "env": {},
