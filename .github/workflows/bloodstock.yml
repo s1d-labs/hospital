@@ -1,0 +1,29 @@
+name: bloodstock
+
+# Queues one e-Raktkosh blood-stock snapshot (seed_stock.py) every 3 hours; the pool runners fetch it. Also on pushes that
+# change seed_stock.py, and by hand (Actions -> bloodstock -> Run workflow).
+on:
+  schedule:
+    - cron: "17 */3 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [seed_stock.py, .github/workflows/bloodstock.yml]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install "scrape-hub-client @ git+https://github.com/s1d-labs/runner@main#subdirectory=sdk"
+      - run: python seed_stock.py
+        env:
+          SCRAPE_HUB_URL: https://scrape.s1d.me

@@ -67,6 +67,17 @@ PROJECTS = [
         "items": nmc_items(),
     },
     {
+        "name": f"{FAMILY}-bloodstock",
+        "title": "e-Raktkosh live blood stock, all India, every 3 hours (snapshots kept)",
+        "task": "fetch",
+        "target": "eraktkosh.mohfw.gov.in",
+        "env": {},
+        "probe": None,                          # the hub's own box can't reach e-Raktkosh
+        "max_workers": 2,
+        "unit_label": "request", "record_label": "response",
+        "items": [],                            # seeded per snapshot by seed_stock.py (bloodstock workflow)
+    },
+    {
         "name": f"{FAMILY}-dirs",
         "title": "Small health directories: CGHS hospitals, e-Raktkosh blood centres, ABDM master lists",
         "task": "fetch",
