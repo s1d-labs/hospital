@@ -55,6 +55,9 @@ def dirs_items():
     items += [{"key": f"eraktkosh-probe-aligarh-c{c}", "payload": {"url": "https://eraktkosh.mohfw.gov.in/BLDAHIMS/bloodbank/nearbyBB.cnt"
                f"?hmode=GETNEARBYSTOCKDETAILS&stateCode=99&districtCode=143&bloodGroup=all&bloodComponent={c}&lang=0", "expected": 1}}
               for c in ("11", "12", "20")]
+    items += [{"key": f"eraktkosh-probe-up-c{c}", "payload": {"url": "https://eraktkosh.mohfw.gov.in/BLDAHIMS/bloodbank/nearbyBB.cnt"
+               f"?hmode=GETNEARBYSTOCKDETAILS&stateCode=99&districtCode=-1&bloodGroup=all&bloodComponent={c}&lang=0", "expected": 1}}
+              for c in ("11", "20")]
     return items
 
 
