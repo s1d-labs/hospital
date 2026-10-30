@@ -50,6 +50,8 @@ def dirs_items():
         ("portal", "https://eraktkosh.mohfw.gov.in/eraktkoshPortal/"),
         ("stock", "https://eraktkosh.mohfw.gov.in/BLDAHIMS/bloodbank/stockAvailability.cnt"),
         ("nearby", "https://eraktkosh.mohfw.gov.in/BLDAHIMS/bloodbank/nearbyBB.cnt"),
+        ("portal-js", "https://eraktkosh.mohfw.gov.in/eraktkoshPortal/static/js/main.fd5d38b3.js"),
+        ("sitemap", "https://eraktkosh.mohfw.gov.in/BLDAHIMS/bloodbank/eraktkoshSiteMap.cnt"),
     ]]
     # probe: does a state/district stock query honour the component? (the all-India query returns the same totals for every one)
     items += [{"key": f"eraktkosh-probe-aligarh-c{c}", "payload": {"url": "https://eraktkosh.mohfw.gov.in/BLDAHIMS/bloodbank/nearbyBB.cnt"
