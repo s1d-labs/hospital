@@ -22,10 +22,6 @@ def nmc_items():
             expected = min(total, last * NMC_PER_PAGE) - (first - 1) * NMC_PER_PAGE
             items.append({"key": f"y{year}-p{first}", "payload": {"year": year, "first": first, "last": last, "per_page": NMC_PER_PAGE,
                                                                   "total": total, "expected": expected}})
-    # probe: does a state/district stock query honour the component? (the all-India query returns the same totals for every one)
-    items += [{"key": f"eraktkosh-probe-aligarh-c{c}", "payload": {"url": "https://eraktkosh.mohfw.gov.in/BLDAHIMS/bloodbank/nearbyBB.cnt"
-               f"?hmode=GETNEARBYSTOCKDETAILS&stateCode=99&districtCode=143&bloodGroup=all&bloodComponent={c}&lang=0", "expected": 1}}
-              for c in ("11", "12", "20")]
     return items
 
 
@@ -55,6 +51,10 @@ def dirs_items():
         ("stock", "https://eraktkosh.mohfw.gov.in/BLDAHIMS/bloodbank/stockAvailability.cnt"),
         ("nearby", "https://eraktkosh.mohfw.gov.in/BLDAHIMS/bloodbank/nearbyBB.cnt"),
     ]]
+    # probe: does a state/district stock query honour the component? (the all-India query returns the same totals for every one)
+    items += [{"key": f"eraktkosh-probe-aligarh-c{c}", "payload": {"url": "https://eraktkosh.mohfw.gov.in/BLDAHIMS/bloodbank/nearbyBB.cnt"
+               f"?hmode=GETNEARBYSTOCKDETAILS&stateCode=99&districtCode=143&bloodGroup=all&bloodComponent={c}&lang=0", "expected": 1}}
+              for c in ("11", "12", "20")]
     return items
 
 
