@@ -19,6 +19,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 
 import requests
+from scrape_hub_client import LocalHub, timed_get
 
 PROJECT = os.environ.get("SCRAPE_POOL_PROJECT", "")
 SITE = os.environ.get("SITE", "https://nmc.org.in")
@@ -79,16 +80,11 @@ def fetch(hub, session, url, pace, attempts=8):
         if time.time() > DEADLINE:
             return None
         pace.wait(hub.settings.get("rps_per_worker", 2))
-        t = time.time()
-        try:
-            r = session.get(url, timeout=90, headers={"User-Agent": UA, "X-Requested-With": "XMLHttpRequest", "Accept": "application/json"})
-        except requests.RequestException:
-            hub.metric("http_error")
-            hub.error()
+        # counts n_http, t_http_s, http_<code>, http_error for the hub; 403/429/503 -> hub.block()
+        r = timed_get(hub, session, url, timeout=90, headers={"User-Agent": UA, "X-Requested-With": "XMLHttpRequest", "Accept": "application/json"})
+        if r is None:
             time.sleep(min(30, 3 * (n + 1)))
             continue
-        hub.metric("n_http")
-        hub.metric("t_http_s", time.time() - t)
         if r.status_code == 200:
             try:
                 body = r.json()
@@ -98,10 +94,6 @@ def fetch(hub, session, url, pace, attempts=8):
             if body and body.get("success"):
                 return body
             hub.metric("not_success")
-        else:
-            hub.metric(f"http_{r.status_code}")
-            if r.status_code in (403, 429, 503):
-                hub.block()
         time.sleep(min(30, 3 * (n + 1)))
         delay = hub.settings.get("delay_ms", 0) / 1000
         if delay:
@@ -141,20 +133,8 @@ def run_item(hub, pool, session_for, pace, item):
 
 
 def local(year, page):
-    class LocalHub:
-        settings = {"rps_per_worker": 0.5, "delay_ms": 0}
-        counts = {}
-
-        def metric(self, name, value=1):
-            self.counts[name] = self.counts.get(name, 0) + value
-
-        def error(self, n=1):
-            self.metric("errors", n)
-
-        def block(self, n=1):
-            self.metric("blocked", n)
-
     hub = LocalHub()
+    hub.settings["rps_per_worker"] = 0.5
     body = fetch(hub, requests.Session(), search_url(year, page), Pace(), attempts=3)
     rows = parse(body, year) if body else []
     for rid, data in rows[:3]:
@@ -163,7 +143,7 @@ def local(year, page):
 
 
 def main():
-    from scrape_hub_client import HubClient      # imported here so --local works without it
+    from scrape_hub_client import HubClient
     hub = HubClient(PROJECT, job_index=int(os.environ.get("SCRAPE_JOB_INDEX", "0")), total_jobs=int(os.environ.get("SCRAPE_TOTAL_JOBS", "1")))
     signal.signal(signal.SIGINT, signal.default_int_handler)
     local_sessions = threading.local()
