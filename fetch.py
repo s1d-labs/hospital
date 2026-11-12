@@ -8,6 +8,7 @@ import os
 import time
 
 import requests
+from scrape_hub_client import timed_request
 
 PROJECT = os.environ.get("SCRAPE_POOL_PROJECT", "")
 DEADLINE = time.time() + float(os.environ.get("SCRAPE_MAX_HOURS", "1")) * 3600 - 120
@@ -25,21 +26,13 @@ def parse(r):
 
 def get(hub, session, item):
     p = item["payload"]
-    t = time.time()
-    try:
-        r = session.request(p.get("method", "GET"), p["url"], json=p.get("json"), timeout=120,
-                            headers={"User-Agent": UA, "Accept": "application/json, text/plain, */*"})
+    try:      # counts n_http, t_http_s, http_<code>, http_error for the hub; 403/429/503 -> hub.block()
+        r = timed_request(hub, session, p.get("method", "GET"), p["url"], raise_errors=True, json=p.get("json"), timeout=120,
+                          headers={"User-Agent": UA, "Accept": "application/json, text/plain, */*"})
     except requests.RequestException as e:
-        hub.metric("http_error")
-        hub.error()
         hub.failure("fetch", item["key"], f"{type(e).__name__}: {e}"[:300], url=p["url"])
         return None
-    hub.metric("n_http")
-    hub.metric("t_http_s", time.time() - t)
     if r.status_code != 200:
-        hub.metric(f"http_{r.status_code}")
-        if r.status_code in (403, 429, 503):
-            hub.block()
         hub.failure("fetch", item["key"], f"HTTP {r.status_code}", url=p["url"], body=r.text[:300])
         return None
     return parse(r)
