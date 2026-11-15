@@ -1,0 +1,22 @@
+ABDM and CGHS public directory collectors
+
+Use Node.js 20 or later and a local installation of Google Chrome.
+From this directory run npm ci, then run one of these commands.
+
+  node collect.mjs hospitals
+  node collect.mjs doctors
+  node collect.mjs facility IN0810000090
+  python3 cghs-directory.py exports/cghs.csv
+
+For ABDM, choose the geography in Chrome, enter the CAPTCHA and click Search.
+Keep the selected registry type. Use the site's Load More button for more rows.
+Wait for the saved row count in the terminal before closing Chrome.
+Each run writes a new folder under exports. Each CSV contains new IDs from
+the displayed results. Preserve all pages. Deduplicate by hfr_id or hpr_id
+when combining runs. Compare unique IDs against the registry total to
+assess coverage. A run can finish with partial results.
+
+The facility command saves the exact ID across facility types, including
+Medical College. The HFR hospitals command saves the Hospital facility type. The HPR collector saves
+Doctor results. The CGHS command downloads the national empanelled list.
+This handoff uses the field mappings from Om's box collectors.
